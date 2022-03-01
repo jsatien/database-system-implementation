@@ -88,14 +88,16 @@ SELECT_LATEST_POLL_WITH_OPTIONS = """SELECT * FROM polls
  WHERE polls.id = (
      SELECT id FROM polls ORDER BY id DESC LIMIT 1
  );"""
+
 SELECT_POLL_VOTE_DETAILS = """
 SELECT
     options.id,
     options.option_text,
     COUNT(votes.option_id) as vote_count,
-    COUNT(votes.option_id) * 100.0 / sum(count(votes.option_id)) as vote_percentage
+    COUNT(votes.option_id) / SUM(COUNT(votes.option_id)) OVER() * 100.0 as vote_percentage
 FROM options
 LEFT JOIN votes on options.id = votes.option_id
-WHERE options.poll_id = %s
+WHERE options.poll_id = 1
 GROUP BY options.id;"""
+
 SELECT_RANDOM_VOTE = "SELECT * FROM votes WHERE option_id = %s ORDER BY RANDOM() LIMIT 1;"
